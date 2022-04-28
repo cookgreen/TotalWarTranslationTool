@@ -96,6 +96,10 @@ namespace TotalWarTranslationTool
             for (int i = 0; i < arr.Length; i++)
             {
                 string str = arr[i];
+
+                if (string.IsNullOrEmpty(str))
+                    continue;
+
                 if (str.StartsWith("{") && str.Contains("}"))
                 {
                     TotalWarString totalWarString = new TotalWarString(str);
@@ -130,7 +134,7 @@ namespace TotalWarTranslationTool
             thread.Start();
         }
 
-        private void Request_TranslateFinished(string text, object keyObj)
+        private void Request_TranslateFinished(bool unused, string text, object keyObj)
         {
             translatedStrings.Add(new Tuple<string, string>(keyObj.ToString(), text));
         }
