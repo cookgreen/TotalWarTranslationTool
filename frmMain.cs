@@ -17,6 +17,7 @@ namespace TotalWarTranslationTool
         private GoogleTranslationDic googleTranslationDic;
         private List<TotalWarString> totalWarStrings;
         private List<Tuple<string, string>> translatedStrings;
+
         private delegate void SetRichTextBoxTextDelegate(RichTextBox textbox, string str);
         private delegate void SetProgressBarStyleDelegate(ProgressBar progressBar, ProgressBarStyle progressBarStyle);
         private SetRichTextBoxTextDelegate setRichTextBoxTextDelegate;
@@ -84,6 +85,11 @@ namespace TotalWarTranslationTool
             translatedStrings.Clear();
             txtTranslatedText.Clear();
 
+            /*
+             * Since we don't want translate engine to translate the key
+             * so we need to `extract` the text from the string line
+             */
+
             StringBuilder stringBuilder = new StringBuilder();
             string[] arr = txtOrginalText.Lines;
 
@@ -103,10 +109,14 @@ namespace TotalWarTranslationTool
 
             Thread thread = new Thread(() =>
             {
-                while (translatedStrings.Count != totalWarStrings.Count)
-                {
+                // The translated text array count must be equal to the un-translated arrary
 
-                }
+                while (translatedStrings.Count != totalWarStrings.Count) { }
+
+                /*
+                 * After we translate the text, we need to rebuild the string line
+                 * with the key since total war needs it.
+                 */
 
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < translatedStrings.Count; i++)
@@ -120,9 +130,9 @@ namespace TotalWarTranslationTool
             thread.Start();
         }
 
-        private void Request_TranslateFinished(string text, object userData)
+        private void Request_TranslateFinished(string text, object keyObj)
         {
-            translatedStrings.Add(new Tuple<string, string>(userData.ToString(), text));
+            translatedStrings.Add(new Tuple<string, string>(keyObj.ToString(), text));
         }
     }
 }
