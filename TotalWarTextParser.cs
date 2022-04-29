@@ -8,9 +8,9 @@ namespace TotalWarTranslationTool
 {
     public class TotalWarTextParser
     {
-        private string originalTextContent;
+        private List<string> originalTextContent;
 
-        public TotalWarTextParser(string textContent)
+        public TotalWarTextParser(List<string> textContent)
         {
             originalTextContent = textContent;
         }
@@ -20,11 +20,10 @@ namespace TotalWarTranslationTool
             List<TotalWarTextObject> textObjects = new List<TotalWarTextObject>();
 
             List<string> strArr = null;
-            string[] arr = originalTextContent.Split(Environment.NewLine);
 
-            for (int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < originalTextContent.Count; i++)
             {
-                string str = arr[i];
+                string str = originalTextContent[i];
 
                 if (string.IsNullOrEmpty(str)) //Pass the empty line
                     continue;

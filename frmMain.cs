@@ -89,8 +89,9 @@ namespace TotalWarTranslationTool
              */
 
 
-            TotalWarTextParser textParser = new TotalWarTextParser(txtOrginalText.Text);
+            TotalWarTextParser textParser = new TotalWarTextParser(txtOrginalText.Lines.ToList());
             List<TotalWarTextObject> textObjects = textParser.Parse();
+
             foreach (var textObject in textObjects)
             {
                 if(textObject.TextType == TotalWarTextType.LocalizedString)

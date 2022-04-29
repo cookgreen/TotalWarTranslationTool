@@ -24,8 +24,15 @@ namespace TotalWarTranslationTool
 
         private void parseFile(string filePath)
         {
-            var content = File.ReadAllText(filePath);
-            textParser = new TotalWarTextParser(content);
+            List<string> textContents = new List<string>();
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                while (reader.Peek() > -1)
+                {
+                    textContents.Add(reader.ReadLine());
+                }
+            }
+            textParser = new TotalWarTextParser(textContents);
             textContent = textParser.Parse();
         }
     }
