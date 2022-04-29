@@ -15,10 +15,26 @@ namespace TotalWarTranslationTool
     public partial class frmMain : Form
     {
         private GoogleTranslationDic googleTranslationDic;
+        private List<Control> controlTexts;
 
         public frmMain()
         {
             InitializeComponent();
+
+            controlTexts = new List<Control>();
+            controlTexts.Add(this);
+            controlTexts.Add(gbText);
+            controlTexts.Add(gbTranslation);
+            controlTexts.Add(btnTranslation);
+
+            controlTexts.Add(btnBrowse);
+            controlTexts.Add(gbFilePreview);
+            controlTexts.Add(gbTranslation);
+            controlTexts.Add(gbFileText);
+            controlTexts.Add(gbSuggestion);
+
+            controlTexts.Add(tabPage1);
+            controlTexts.Add(tabPage2);
 
             googleTranslationDic = new GoogleTranslationDic("./settings//google.ini");
 
@@ -30,6 +46,12 @@ namespace TotalWarTranslationTool
             {
                 translationSourceLangCombox.Items.Add(translationName);
                 translationDestCombox.Items.Add(translationName);
+
+                var newMenuItem = mnuSettings.DropDownItems.Add(translationName);
+                newMenuItem.Click += (o, e) =>
+                {
+                    translateUI(newMenuItem.Text);
+                };
             }
 
             translationSourceLangCombox.SelectedIndex = 0;
@@ -38,18 +60,47 @@ namespace TotalWarTranslationTool
 
             tasks = new List<TotalWarTranslationTask>();
 
+            setButtonEnableDelegate = new SetButtonEnableDelegate(SetButtonEnableMethod);
             setRichTextBoxTextDelegate = new SetRichTextBoxTextDelegate(SetRichTextBoxTextMethod);
             setProgressBarStyleDelegate = new SetProgressBarStyleDelegate(SetProgressBarStyleMethod);
+        }
+
+        private void translateUI(string translationName)
+        {
+            string destLangID = googleTranslationDic.GetGoogleTranslationID(translationName);
+
+            GoogleTranslateAPIRequest request = new GoogleTranslateAPIRequest(destLangID);
+            foreach(var controlText in controlTexts)
+            {
+                request.TranslateAsync(controlText.Text, controlText);
+                request.TranslateFinished += (o, e, e2) => {
+                    (e2 as Control).Text = e;
+                };
+            }    
         }
 
         #region Tabpage - Text Translation
 
         private List<TotalWarTranslationTask> tasks;
 
+        private delegate void SetButtonEnableDelegate(Button button, bool enable);
         private delegate void SetRichTextBoxTextDelegate(RichTextBox textbox, string str);
         private delegate void SetProgressBarStyleDelegate(ProgressBar progressBar, ProgressBarStyle progressBarStyle);
+        private SetButtonEnableDelegate setButtonEnableDelegate;
         private SetRichTextBoxTextDelegate setRichTextBoxTextDelegate;
         private SetProgressBarStyleDelegate setProgressBarStyleDelegate;
+
+        private void SetButtonEnableMethod(Button button, bool enable)
+        {
+            if (button.InvokeRequired)
+            {
+                button.Invoke(setButtonEnableDelegate, button, enable);
+            }
+            else
+            {
+                button.Enabled = enable;
+            }
+        }
 
         private void SetProgressBarStyleMethod(ProgressBar progressBar, ProgressBarStyle progressBarStyle)
         {
@@ -77,6 +128,12 @@ namespace TotalWarTranslationTool
 
         private void btnTranslation_Click(object sender, EventArgs e)
         {
+            if(string.IsNullOrEmpty(txtOrginalText.Text))
+            {
+                MessageBox.Show("Please input something!");
+                return;
+            }
+
             string destLangID = googleTranslationDic.GetGoogleTranslationID(
                     translationDestCombox.SelectedItem.ToString());
 
@@ -124,6 +181,7 @@ namespace TotalWarTranslationTool
                     builder.Append(tasks[i].TranslatedStr.ToRawString());
                     builder.Append(Environment.NewLine);
                 }
+                SetButtonEnableMethod(btnTranslation, true);
                 SetRichTextBoxTextMethod(txtTranslatedText, builder.ToString());
                 SetProgressBarStyleMethod(progressBarTranslation, ProgressBarStyle.Continuous);
             });
@@ -145,5 +203,10 @@ namespace TotalWarTranslationTool
         }
 
         #endregion;
+
+        private void mnuExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }

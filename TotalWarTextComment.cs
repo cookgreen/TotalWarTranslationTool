@@ -12,7 +12,7 @@ namespace TotalWarTranslationTool
 
         public TotalWarTextComment(string commentContent)
         {
-            this.commentContent = commentContent;
+            this.commentContent = commentContent.Substring(1);
             type = TotalWarTextType.Comment;
         }
 

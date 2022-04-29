@@ -66,7 +66,7 @@ namespace TotalWarTranslationTool
                         }
 
                         strArr = new List<string>();
-                        
+                        strArr.Add(str);
                     }
                     else
                     {
