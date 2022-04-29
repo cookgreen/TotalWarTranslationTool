@@ -37,7 +37,6 @@ namespace TotalWarTranslationTool
 
 
             tasks = new List<TotalWarTranslationTask>();
-            translatedStrings = new List<Tuple<string, string>>();
 
             setRichTextBoxTextDelegate = new SetRichTextBoxTextDelegate(SetRichTextBoxTextMethod);
             setProgressBarStyleDelegate = new SetProgressBarStyleDelegate(SetProgressBarStyleMethod);
@@ -46,7 +45,6 @@ namespace TotalWarTranslationTool
         #region Tabpage - Text Translation
 
         private List<TotalWarTranslationTask> tasks;
-        private List<Tuple<string, string>> translatedStrings;
 
         private delegate void SetRichTextBoxTextDelegate(RichTextBox textbox, string str);
         private delegate void SetProgressBarStyleDelegate(ProgressBar progressBar, ProgressBarStyle progressBarStyle);
@@ -83,7 +81,6 @@ namespace TotalWarTranslationTool
                     translationDestCombox.SelectedItem.ToString());
 
             tasks.Clear();
-            translatedStrings.Clear();
             txtTranslatedText.Clear();
 
             /*
@@ -91,39 +88,17 @@ namespace TotalWarTranslationTool
              * so we need to `extract` the text from the string line
              */
 
-            StringBuilder stringBuilder = new StringBuilder();
-            string[] arr = txtOrginalText.Lines;
 
-            for (int i = 0; i < arr.Length; i++)
+            TotalWarTextParser textParser = new TotalWarTextParser(txtOrginalText.Text);
+            List<TotalWarTextObject> textObjects = textParser.Parse();
+            foreach (var textObject in textObjects)
             {
-                string str = arr[i];
-
-                if (string.IsNullOrEmpty(str))
-                    continue;
-
-                if (str.StartsWith("{") && str.Contains("}"))
+                if(textObject.TextType == TotalWarTextType.LocalizedString)
                 {
-                    string[] tokens = str.Split('}');
-                    if (!string.IsNullOrEmpty(tokens[1]))
-                    {
-                        TotalWarString totalWarString = new TotalWarString(str);
-                        TotalWarTranslationTask newTask = new TotalWarTranslationTask(totalWarString, destLangID);
-                        newTask.Start();
-                        tasks.Add(newTask);
-                    }
-                    else
-                    {
-                        string temp = arr[i + 1]; //check next line
-                        if (!temp.StartsWith("{") && !temp.Contains("}"))
-                        {
-                            TotalWarString totalWarString = new TotalWarString(str + temp);
-                            TotalWarTranslationTask newTask = new TotalWarTranslationTask(totalWarString, destLangID);
-                            newTask.Start();
-                            tasks.Add(newTask);
-
-                            i++;//increase 1
-                        }
-                    }
+                    TotalWarTextString totalWarStr = textObject as TotalWarTextString;
+                    TotalWarTranslationTask newTask = new TotalWarTranslationTask(totalWarStr, destLangID);
+                    newTask.Start();
+                    tasks.Add(newTask);
                 }
             }
 

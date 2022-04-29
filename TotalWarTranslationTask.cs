@@ -19,15 +19,15 @@ namespace TotalWarTranslationTool
         private TotalWarTranslationTaskStatus status;
         private GoogleTranslateAPIRequest request;
         private string destLangID;
-        private TotalWarString originaStr;
-        private TotalWarString translatedStr;
+        private TotalWarTextString originaStr;
+        private TotalWarTextString translatedStr;
 
         public TotalWarTranslationTaskStatus Status
         {
             get { return status; }
         }
 
-        public TotalWarString TranslatedStr
+        public TotalWarTextString TranslatedStr
         {
             get { return translatedStr; }
         }
@@ -37,7 +37,7 @@ namespace TotalWarTranslationTool
             get { return destLangID; }
         }
 
-        public TotalWarTranslationTask(TotalWarString totalWarString, string destLangID)
+        public TotalWarTranslationTask(TotalWarTextString totalWarString, string destLangID)
         {
             originaStr = totalWarString;
             this.destLangID = destLangID;
@@ -54,7 +54,7 @@ namespace TotalWarTranslationTool
 
         private void Request_TranslateFinished(bool unused, string text, object keyObj)
         {
-            translatedStr = new TotalWarString(keyObj.ToString(), text);
+            translatedStr = new TotalWarTextString(keyObj.ToString(), text);
             status = TotalWarTranslationTaskStatus.Finished;
         }
     }

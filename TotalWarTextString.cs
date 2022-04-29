@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TotalWarTranslationTool
 {
-    public class TotalWarString
+    public class TotalWarTextString : TotalWarTextObject
     {
         private string key;
         private string text;
@@ -21,8 +21,9 @@ namespace TotalWarTranslationTool
             get { return text; }
         }
 
-        public TotalWarString(string rawString)
+        public TotalWarTextString(string rawString)
         {
+            type = TotalWarTextType.LocalizedString;
             if (rawString.StartsWith("{") && rawString.Contains("}"))
             {
                 string[] tokens = rawString.Split('}');
@@ -31,13 +32,14 @@ namespace TotalWarTranslationTool
             }
         }
 
-        public TotalWarString(string key, string text)
+        public TotalWarTextString(string key, string text)
         {
+            type = TotalWarTextType.LocalizedString;
             this.key = key;
             this.text = text;
         }
 
-        public string ToRawString()
+        public override string ToRawString()
         {
             return "{" + key + "}" + text;
         }

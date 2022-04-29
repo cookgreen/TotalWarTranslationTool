@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,16 +9,24 @@ namespace TotalWarTranslationTool
 {
     public class TotalWarTextFile
     {
-        private List<string> fileContent;
+        private TotalWarTextParser textParser;
+        private List<TotalWarTextObject> textContent;
+
+        public List<TotalWarTextObject> TextContent
+        {
+            get { return textContent; }
+        }
 
         public TotalWarTextFile(string filePath)
         {
-            parseFile();
+            parseFile(filePath);
         }
 
-        private void parseFile()
+        private void parseFile(string filePath)
         {
-            throw new NotImplementedException();
+            var content = File.ReadAllText(filePath);
+            textParser = new TotalWarTextParser(content);
+            textContent = textParser.Parse();
         }
     }
 }
