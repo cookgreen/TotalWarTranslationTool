@@ -21,14 +21,20 @@ namespace TotalWarTranslationTool
             get { return text; }
         }
 
-        public TotalWarString(string str)
+        public TotalWarString(string rawString)
         {
-            if (str.StartsWith("{") && str.Contains("}"))
+            if (rawString.StartsWith("{") && rawString.Contains("}"))
             {
-                string[] tokens = str.Split('}');
+                string[] tokens = rawString.Split('}');
                 key = tokens[0].Trim().Substring(1);
                 text = tokens[1].Trim();
             }
+        }
+
+        public TotalWarString(string key, string text)
+        {
+            this.key = key;
+            this.text = text;
         }
 
         public string ToRawString()
