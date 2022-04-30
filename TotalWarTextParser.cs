@@ -73,6 +73,23 @@ namespace TotalWarTranslationTool
                         strArr.Add(str);
                     }
                 }
+
+                if (i == originalTextContent.Count - 1)
+                {
+                    if (strArr != null)
+                    {
+                        if (strArr[0].StartsWith("{"))
+                        {
+                            TotalWarTextString totalWarString = new TotalWarTextString(convertToStr(strArr));
+                            textObjects.Add(totalWarString);
+                        }
+                        else if (strArr[0].StartsWith("¬"))
+                        {
+                            TotalWarTextComment totalWarTextComment = new TotalWarTextComment(convertToStr(strArr));
+                            textObjects.Add(totalWarTextComment);
+                        }
+                    }
+                }
             }
 
             return textObjects;
